@@ -7,7 +7,7 @@ import table from './table'
 const mocks = [
   ...user,
   ...table
-]
+]     
 
 // for front mock
 // please use it cautiously, it will redefine XMLHttpRequest,
