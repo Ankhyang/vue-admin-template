@@ -10,12 +10,12 @@ const data = Mock.mock({
 
 export default [
   {
-    url: '/baseData/valueSet',
+    url: '/baseData/valueSet/list',
     type: 'get',
     response: config => {
       const items = data.items
       return {
-        code: 200,
+        code: 20000,
         data: {
           total: items.length,
           items: items

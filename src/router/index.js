@@ -88,7 +88,7 @@ export const constantRoutes = [
       {
         path: 'valueSet',
         name: 'ValueSet',
-        component: () => import('@/views/baseData/valueSet'),
+        component: () => import('@/views/baseData/valueSet/index'),
         meta: { title: '值集管理', icon: 'dictionary' }
       }
     ]
