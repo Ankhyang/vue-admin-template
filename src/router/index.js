@@ -78,6 +78,23 @@ export const constantRoutes = [
   },
 
   {
+    path: '/baseData',
+    component: Layout,
+    redirect: '/baseData/valueSet',
+    name: 'BaseData',
+    alwaysShow: true,
+    meta: { title: '基础数据', icon: 'baseInfo' },
+    children: [
+      {
+        path: 'valueSet',
+        name: 'ValueSet',
+        component: () => import('@/views/baseData/valueSet'),
+        meta: { title: '值集管理', icon: 'dictionary' }
+      }
+    ]
+  },
+
+  {
     path: '/form',
     component: Layout,
     children: [
