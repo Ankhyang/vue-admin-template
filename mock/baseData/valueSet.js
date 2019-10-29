@@ -8,6 +8,7 @@ for (let i = 0; i < count; i++) {
     id: i + 1,
     code: '@word(3, 5)',
     desc: '@csentence(5, 15)',
+    remark: '@csentence(3, 25)',
     create_time: '@datetime("yyyy-MM-dd HH:mm")'
   })
 }

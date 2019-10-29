@@ -1,8 +1,10 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      编码：<el-input v-model="listQuery.code" size="small" style="width:200px"></el-input>
-      &emsp;描述：<el-input v-model="listQuery.desc" size="small" style="width:200px"></el-input>
+      <span>编码：</span><el-input v-model="listQuery.code" size="small" style="width:200px"></el-input>
+      <span>&emsp;描述：</span><el-input v-model="listQuery.desc" size="small" style="width:200px"></el-input>
+      <el-button icon="el-icon-search" type="primary" size="small" @click="handleFilter">查询</el-button>
+      <el-button icon="el-icon-plus" type="primary" size="small" @click="handleCreate">新增</el-button>
     </div>
     <el-table
       :data="list"
@@ -16,6 +18,7 @@
       <el-table-column prop="id" label="序号"></el-table-column>
       <el-table-column prop="code" label="编码"></el-table-column>
       <el-table-column prop="desc" label="描述" show-overflow-tooltip></el-table-column>
+      <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
       <el-table-column label="创建时间">
         <template slot-scope="scope">
           <i class="el-icon-time"></i>
@@ -30,6 +33,23 @@
       </el-table-column>
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="fetchData" />
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+      <el-form style="width:80%; margin: 0 auto">
+        <el-form-item label="编码">
+          <el-input v-model="temp.code" size="small" style="width:80%"></el-input>
+        </el-form-item>
+        <el-form-item label="描述">
+          <el-input v-model="temp.desc" size="small" style="width:80%"></el-input>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="temp.remark" size="small" type="textarea" style="width:80%"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" type="warning" @click="dialogFormVisible = false">取消</el-button>
+        <el-button size="small" type="primary" @click="dialogStatus === 'create'? createData():updateData()">确定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -49,6 +69,17 @@ export default {
         limit: 10,
         code: undefined,
         desc: undefined
+      },
+      dialogFormVisible: false,
+      dialogStatus: '',
+      textMap: {
+        update: '修改值集',
+        create: '新增值集'
+      },
+      temp: {
+        code: '',
+        desc: '',
+        remark: ''
       }
     }
   },
@@ -63,6 +94,21 @@ export default {
         this.total = response.data.total
         this.listLoading = false
       })
+    },
+    handleFilter() {
+      this.listQuery.page = 1
+      this.fetchData()
+    },
+    handleCreate() {
+      this.dialogFormVisible = true
+      this.dialogStatus = 'create'
+    },
+    handleEdit() {
+      this.dialogFormVisible = true
+      this.dialogStatus = 'update'
+    },
+    handleDelete() {
+
     }
   }
 }
@@ -70,6 +116,9 @@ export default {
 
 <style lang="stylus" scoped>
   .filter-container{
-    margin 10px 5px;
+    font-size: 15px;
+    color : #606266;
+    font-weight : bold;
+    margin: 10px 5px;
   }
 </style>

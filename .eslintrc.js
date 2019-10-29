@@ -202,6 +202,8 @@ module.exports = {
       },
       "svg": "always",
       "math": "always"
-    }]
+    }],
+    "no-irregular-whitespace":"off",
+    "no-console":"off"
   }
 }
