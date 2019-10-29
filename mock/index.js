@@ -9,7 +9,7 @@ const mocks = [
   ...user,
   ...table,
   ...valueSet
-]     
+]
 
 // for front mock
 // please use it cautiously, it will redefine XMLHttpRequest,
