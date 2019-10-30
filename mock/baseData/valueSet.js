@@ -1,16 +1,16 @@
 import Mock from 'mockjs'
 
 const List = []
-const count = 100
+const count = 5
 
 for (let i = 0; i < count; i++) {
-  List.push({
-    id: i + 1,
+  List.push(Mock.mock({
+    id: '@increment',
     code: '@word(3, 5)',
     desc: '@csentence(5, 15)',
     remark: '@csentence(3, 25)',
-    create_time: '@datetime("yyyy-MM-dd HH:mm")'
-  })
+    create_time: '@datetime'
+  }))
 }
 
 export default [
@@ -41,19 +41,64 @@ export default [
     url: '/baseData/valueSet/add',
     type: 'post',
     response: config => {
-      const { code, desc } = config.body
-      const length = List.items.length
-      List.items.push({
-        id: length + 1,
+      const { code, desc, remark, create_time } = config.body
+      List.push({
+        id: 10000,
         code,
         desc,
-        create_time: '@datetime("yyyy-MM-dd HH:mm")'
+        create_time,
+        remark
       })
       return {
         code: 20000,
         data: {
-          total: List.items.length,
-          items: List.items
+          total: List.length,
+          items: List
+        }
+      }
+    }
+  },
+
+  // 修改数据
+  {
+    url: '/baseData/valueSet/update',
+    type: 'put',
+    response: config => {
+      const { id, code, desc, remark, create_time } = config.body
+      const temp = { id, code, desc, remark, create_time }
+      for (const item of List) {
+        if (item.id === id) {
+          const index = List.indexOf(item)
+          List.splice(index, 1, temp)
+        }
+      }
+      return {
+        code: 20000,
+        data: {
+          total: List.length,
+          items: List
+        }
+      }
+    }
+  },
+
+  // 删除数据
+  {
+    url: '/baseData/valueSet/delete',
+    type: 'delete',
+    response: config => {
+      const { id } = config.body
+      for (const item of List) {
+        if (item.id === id) {
+          const index = List.indexOf(item)
+          List.splice(index, 1)
+        }
+      }
+      return {
+        code: 20000,
+        data: {
+          total: List.length,
+          items: List
         }
       }
     }

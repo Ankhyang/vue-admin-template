@@ -12,6 +12,8 @@ import App from './App'
 import store from './store'
 import router from './router'
 
+import * as filters from './filters'
+
 import '@/icons' // icon
 import '@/permission' // permission control
 
@@ -30,6 +32,10 @@ if (process.env.NODE_ENV === 'production') {
 
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
+
+Object.keys(filters).forEach(key => {
+  Vue.filter(key, filters[key])
+})
 
 Vue.config.productionTip = false
 

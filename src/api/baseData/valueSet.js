@@ -3,15 +3,32 @@ import request from '@/utils/request'
 export function getList(query) {
   return request({
     url: '/baseData/valueSet/list',
-    type: 'get',
+    method: 'get',
     query
   })
 }
 
-export function add(data) {
+export function addData(data) {
   return request({
     url: '/baseData/valueSet/add',
-    type: 'post',
+    method: 'post',
     data
   })
 }
+
+export function updateData(data) {
+  return request({
+    url: '/baseData/valueSet/update',
+    method: 'put',
+    data
+  })
+}
+
+export function deleteData(data) {
+  return request({
+    url: '/baseData/valueSet/delete',
+    method: 'delete',
+    data
+  })
+}
+
