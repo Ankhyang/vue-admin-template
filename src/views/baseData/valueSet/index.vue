@@ -207,4 +207,7 @@ export default {
     margin : 0 auto;
     text-align: center
   }
+  .el-button+.el-button {
+    margin-left: 0px;
+}
 </style>

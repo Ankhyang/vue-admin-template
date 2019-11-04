@@ -19,10 +19,10 @@ export default [
     url: '/baseData/valueSet/list',
     type: 'get',
     response: config => {
-      const { code, desc, page = 1, limit = 10 } = config.query
+      const { code, desc, page = 1, limit = 10 } = config.body
       const mockList = List.filter(item => {
-        if (code && code !== item.code) return false
-        if (desc && desc !== item.desc) return false
+        if (code && item.code !== code) return false
+        if (desc && item.desc.indexOf(desc) < 0) return false
         return true
       })
       const pageList = mockList.filter((item, index) => index < limit * page && index >= limit * (page - 1))
