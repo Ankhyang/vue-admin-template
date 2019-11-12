@@ -1,9 +1,10 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <span>编码：</span><el-input v-model="listQuery.code" size="small" style="width:200px"></el-input>
-      <span>&emsp;描述：</span><el-input v-model="listQuery.desc" size="small" style="width:200px"></el-input>
+      <el-input v-model="listQuery.code" size="small" style="width:200px" placeholder="编码"></el-input>
+      <el-input v-model="listQuery.desc" size="small" style="width:200px" placeholder="描述"></el-input>
       <el-button icon="el-icon-search" type="primary" size="small" @click="handleFilter">查询</el-button>
+      <el-button icon="el-icon-refresh" type="primary" size="small" @click="handleReset">重置</el-button>
       <el-button icon="el-icon-plus" type="primary" size="small" @click="handleCreate">新增</el-button>
     </div>
     <el-table
@@ -15,19 +16,23 @@
       border
       stripe
     >
-      <el-table-column prop="id" label="序号"></el-table-column>
-      <el-table-column prop="code" label="编码"></el-table-column>
+      <el-table-column align="center" label="序号" width="95">
+        <template slot-scope="scope">
+          {{ scope.$index }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="code" label="编码" width="100"></el-table-column>
       <el-table-column prop="desc" label="描述" show-overflow-tooltip></el-table-column>
       <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
-      <el-table-column label="创建时间">
+      <el-table-column label="创建时间" width="150">
         <template slot-scope="scope">
           <i class="el-icon-time"></i>
           <span>{{ scope.row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" header-align="center" align="center">
+      <el-table-column label="操作" fixed="right" header-align="center" align="center" width="180">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button size="mini" type="success" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑</el-button>
           <el-button size="mini" type="danger" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -123,10 +128,21 @@ export default {
         this.listLoading = false
       })
     },
+    // 查询
     handleFilter() {
       this.listQuery.page = 1
       this.fetchData()
     },
+    // 重置
+    handleReset() {
+      this.listQuery = {
+        page: 1,
+        limit: 10,
+        code: undefined,
+        desc: undefined
+      }
+    },
+    // 点击“新增”按钮
     handleCreate() {
       this.resetTemp() // 重置表单
       this.dialogFormVisible = true // 对话框可见

@@ -1,7 +1,7 @@
 import Mock from 'mockjs'
 
 const List = []
-const count = 5
+const count = 15
 
 for (let i = 0; i < count; i++) {
   List.push(Mock.mock({
@@ -19,9 +19,9 @@ export default [
     url: '/baseData/valueSet/list',
     type: 'get',
     response: config => {
-      const { code, desc, page = 1, limit = 10 } = config.body
+      const { code, desc, page = 1, limit = 10 } = config.query
       const mockList = List.filter(item => {
-        if (code && item.code !== code) return false
+        if (code && item.code.indexOf(code) < 0) return false
         if (desc && item.desc.indexOf(desc) < 0) return false
         return true
       })
@@ -35,7 +35,6 @@ export default [
       }
     }
   },
-
   // 新增数据
   {
     url: '/baseData/valueSet/add',

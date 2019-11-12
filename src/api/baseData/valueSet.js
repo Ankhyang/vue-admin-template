@@ -1,10 +1,10 @@
 import request from '@/utils/request'
 
-export function getList(data) {
+export function getList(query) {
   return request({
     url: '/baseData/valueSet/list',
     method: 'get',
-    data
+    params: query
   })
 }
 
