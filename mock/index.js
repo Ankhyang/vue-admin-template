@@ -4,11 +4,13 @@ import { param2Obj } from '../src/utils'
 import user from './user'
 import table from './table'
 import valueSet from './baseData/valueSet'
+import department from './system/department'
 
 const mocks = [
   ...user,
   ...table,
-  ...valueSet
+  ...valueSet,
+  ...department
 ]
 
 // for front mock
