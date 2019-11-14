@@ -18,12 +18,15 @@
     </el-container>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form size="small" :rules="rules" :model="temp" label-width="80px" style="width:60%; margin: 0 auto">
+      <el-form ref="dataForm" size="small" :rules="rules" :model="temp" label-width="80px" style="width:60%; margin: 0 auto">
         <el-form-item label="部门编码" prop="dept_code">
           <el-input v-model="temp.dept_code"></el-input>
         </el-form-item>
         <el-form-item label="部门名称" prop="dept_name">
           <el-input v-model="temp.dept_name"></el-input>
+        </el-form-item>
+        <el-form-item v-if="fistLevelVisible" label="父级部门" prop="parent">
+          <select-tree v-model="temp.parent" :options="options" :props="defaultTreeProps"></select-tree>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="temp.remark" type="textarea"></el-input>
@@ -31,15 +34,19 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="warning" size="small" @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" size="small">确定</el-button>
+        <el-button type="primary" size="small" @click="saveData()">确定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script type="text/javascript">
-import { getFirstLevelList } from '@/api/system/department'
+import { getFirstLevelList, addFirstLevel } from '@/api/system/department'
+import SelectTree from '@/components/SelectTree'
 export default {
+  components: {
+    SelectTree
+  },
   data() {
     return {
       firstLevelList: [],
@@ -48,17 +55,35 @@ export default {
         children: 'children',
         isLeaf: false
       },
+      defaultTreeProps: {
+        partent: 'parent',
+        value: 'id',
+        label: 'label',
+        children: 'children'
+      },
+      options: [],
       rules: {
         dept_code: [{ required: true, message: '编码必填', trigger: 'blur' }],
         dept_name: [{ required: true, message: '描述必填', trigger: 'blur' }]
       },
       dialogFormVisible: false,
+      fistLevelVisible: true,
       dialogStatus: '',
       temp: {
+        id: '',
         dept_name: '',
         dept_code: '',
-        parent_id: '',
+        parent: '',
         remark: ''
+      },
+      resetTemp() {
+        this.temp = {
+          id: '',
+          dept_name: '',
+          dept_code: '',
+          parent: '',
+          remark: ''
+        }
       },
       textMap: {
         createFirst: '新增一级部门',
@@ -75,19 +100,44 @@ export default {
     fetchFirstLevelList() {
       getFirstLevelList().then(response => {
         const tempList = response.data
+        this.firstLevelList = []
         for (const i in tempList) {
-          const { id, dept_name } = tempList[i]
+          const { id, parent, dept_name, children } = tempList[i]
           this.firstLevelList.push({
             id,
+            parent,
             'label': dept_name,
-            'children': []
+            children
           })
         }
       })
     },
     handleCreateFirst() {
-      this.dialogStatus = 'createFirst'
+      this.resetTemp()
+      this.options = this.firstLevelList
+      this.dialogStatus = 'createFirst' // 创建一级部门
       this.dialogFormVisible = true
+      this.fistLevelVisible = true // 一级新增
+    },
+    saveData() {
+      const type = this.dialogStatus
+      switch (type) {
+        case 'createFirst':
+          this.$refs['dataForm'].validate(valid => {
+            if (valid) {
+              addFirstLevel(this.temp).then(response => {
+                this.dialogFormVisible = false
+                this.fetchFirstLevelList()
+                this.$notify({
+                  title: '新增一级部门成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              })
+            }
+          })
+          break
+      }
     }
   }
 }
@@ -116,12 +166,6 @@ export default {
     border-radius: 5px;
     margin 5px;
   }
-  .dialog-footer{
-    margin : 0 auto;
-    text-align: center;
-  }
-  .el-dialog__footer{
-    background-color #ececec !imporatnt;
-  }
+
 </style>
 

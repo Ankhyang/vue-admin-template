@@ -10,7 +10,7 @@ export function getFirstLevelList() {
 export function addFirstLevel(data) {
   return request({
     url: 'system/department/addFirstLevel',
-    method: 'put',
+    method: 'post',
     data
   })
 }
