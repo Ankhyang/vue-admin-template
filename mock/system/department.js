@@ -20,7 +20,7 @@ for (let i = 0; i < count; i++) {
 }
 
 export default [
-  // 获取一级菜单数据
+  // 获取一级部门数据
   {
     url: '/system/department/getFirstLevelList',
     type: 'get',
@@ -31,18 +31,18 @@ export default [
       }
     }
   },
-  // 新增一级菜单
+  // 新增一级部门
   {
     url: '/system/department/addFirstLevel',
     type: 'post',
     response: config => {
-      const { dept_code, dept_name } = config.body
+      const { dept_code, dept_name, remark } = config.body
       List.push({
         id: '@increment',
         dept_code,
         dept_name,
-        parent_id: '%root%',
-        remark: '@csentence(0, 15)',
+        parent: '%root%',
+        remark,
         deleted: false,
         create_time: '@now',
         create_by: '@name',
@@ -53,6 +53,26 @@ export default [
         code: 20000,
         data: List
       }
+    }
+  },
+  // 新增二级部门
+  {
+    url: '/system/department/addSecLevel',
+    type: 'post',
+    response: config => {
+      const { dept_code, dept_name, parent, remark } = config.body
+      List.push({
+        id: '@increment',
+        dept_code,
+        dept_name,
+        parent,
+        remark,
+        deleted: false,
+        create_time: '@now',
+        create_by: '@name',
+        update_time: '@now',
+        update_by: '@name'
+      })
     }
   }
 ]

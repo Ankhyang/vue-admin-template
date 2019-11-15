@@ -4,7 +4,7 @@
       <el-header>
         <el-button-group class="commonbtn">
           <el-button type="primary" size="medium" @click="handleCreateFirst">新增一级</el-button>
-          <el-button type="primary" size="medium">新增二级</el-button>
+          <el-button type="primary" size="medium" @click="handleCreateSec">新增二级</el-button>
         </el-button-group>
       </el-header>
       <el-container>
@@ -25,7 +25,7 @@
         <el-form-item label="部门名称" prop="dept_name">
           <el-input v-model="temp.dept_name"></el-input>
         </el-form-item>
-        <el-form-item v-if="fistLevelVisible" label="父级部门" prop="parent">
+        <el-form-item v-show="!firstLevelVisible" label="父级部门" prop="parent">
           <select-tree v-model="temp.parent" :options="options" :props="defaultTreeProps"></select-tree>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -41,7 +41,7 @@
 </template>
 
 <script type="text/javascript">
-import { getFirstLevelList, addFirstLevel } from '@/api/system/department'
+import { getFirstLevelList, addFirstLevel, addSecLevel } from '@/api/system/department'
 import SelectTree from '@/components/SelectTree'
 export default {
   components: {
@@ -57,7 +57,7 @@ export default {
       },
       defaultTreeProps: {
         partent: 'parent',
-        value: 'id',
+        value: 'label',
         label: 'label',
         children: 'children'
       },
@@ -67,7 +67,7 @@ export default {
         dept_name: [{ required: true, message: '描述必填', trigger: 'blur' }]
       },
       dialogFormVisible: false,
-      fistLevelVisible: true,
+      firstLevelVisible: true,
       dialogStatus: '',
       temp: {
         id: '',
@@ -114,15 +114,21 @@ export default {
     },
     handleCreateFirst() {
       this.resetTemp()
-      this.options = this.firstLevelList
       this.dialogStatus = 'createFirst' // 创建一级部门
       this.dialogFormVisible = true
-      this.fistLevelVisible = true // 一级新增
+      this.firstLevelVisible = true // 一级新增
+    },
+    handleCreateSec() {
+      this.resetTemp()
+      this.options = this.firstLevelList // 加载下拉树数据
+      this.dialogFormVisible = true
+      this.firstLevelVisible = false
+      this.dialogStatus = 'createSec' // 二级新增
     },
     saveData() {
       const type = this.dialogStatus
       switch (type) {
-        case 'createFirst':
+        case 'createFirst': // 一级部门保存
           this.$refs['dataForm'].validate(valid => {
             if (valid) {
               addFirstLevel(this.temp).then(response => {
@@ -130,6 +136,21 @@ export default {
                 this.fetchFirstLevelList()
                 this.$notify({
                   title: '新增一级部门成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              })
+            }
+          })
+          break
+        case 'createSec': // 二级部门保存
+          this.$refs['dataform'].validate(valid => {
+            if (valid) {
+              addSecLevel(this.temp).then(response => {
+                this.dialogFormVisible = false
+                this.fetchFirstLevelList()
+                this.$notify({
+                  title: '新增二级部门成功',
                   type: 'success',
                   duration: 2000
                 })
