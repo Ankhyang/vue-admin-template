@@ -12,7 +12,12 @@
           <el-tree :data="firstLevelList" :props="defaultProps" node-key="id"></el-tree>
         </el-aside>
         <el-main class="commonBg">
-          主页
+          <el-table :data="tableData" stripe style="width:100%">
+            <el-table-column prop="dept_code" label="部门编码"></el-table-column>
+            <el-table-column prop="dept_name" label="部门名称"></el-table-column>
+            <el-table-column prop="parent" label="父级"></el-table-column>
+            <el-table-column prop="remark" label="备注"></el-table-column>
+          </el-table>
         </el-main>
       </el-container>
     </el-container>
@@ -50,14 +55,15 @@ export default {
   data() {
     return {
       firstLevelList: [],
+      tableData: [],
       defaultProps: {
         label: 'label',
         children: 'children',
         isLeaf: false
       },
       defaultTreeProps: {
-        partent: 'parent',
-        value: 'label',
+        parent: 'parent',
+        value: 'id',
         label: 'label',
         children: 'children'
       },
@@ -104,11 +110,28 @@ export default {
         for (const i in tempList) {
           const { id, parent, dept_name, children } = tempList[i]
           this.firstLevelList.push({
-            id,
-            parent,
+            'id': id.toString(),
             'label': dept_name,
+            parent,
             children
           })
+        }
+      })
+    },
+    getSecTableList() {
+      getFirstLevelList().then(response => {
+        const tempList = response.data
+        this.tableData = [];
+        for (const i in tempList) {
+          const {children, dept_name} = tempList[i]
+          for(const j in children) {
+            this.tableData.push({
+              dept_name: children[j].dept_name,
+              dept_code: children[j].dept_code,
+              remark: children[j].remark,
+              parent_name: tempList[i].dept_name
+            })
+          }
         }
       })
     },
@@ -144,7 +167,7 @@ export default {
           })
           break
         case 'createSec': // 二级部门保存
-          this.$refs['dataform'].validate(valid => {
+          this.$refs['dataForm'].validate(valid => {
             if (valid) {
               addSecLevel(this.temp).then(response => {
                 this.dialogFormVisible = false

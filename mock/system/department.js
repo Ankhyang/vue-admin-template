@@ -61,18 +61,26 @@ export default [
     type: 'post',
     response: config => {
       const { dept_code, dept_name, parent, remark } = config.body
-      List.push({
-        id: '@increment',
-        dept_code,
-        dept_name,
-        parent,
-        remark,
-        deleted: false,
-        create_time: '@now',
-        create_by: '@name',
-        update_time: '@now',
-        update_by: '@name'
-      })
+      for (const i of List) {
+        if (List[i].id === parent) {
+          List[i].children.push({
+            id: '@increment',
+            dept_code,
+            dept_name,
+            parent,
+            remark,
+            deleted: false,
+            create_time: '@now',
+            create_by: '@name',
+            update_time: '@now',
+            update_by: '@name'
+          })
+        }
+      }
+      return {
+        code: 20000,
+        data: List
+      }
     }
   }
 ]

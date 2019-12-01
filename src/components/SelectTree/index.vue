@@ -44,9 +44,15 @@ export default {
   },
   props: {
     // 接收绑定参数
-    value: String,
+    value: {
+      type: String
+      // default: ''
+    },
     // 输入框宽度
-    width: String,
+    width: {
+      type: String
+      // default: 'auto'
+    },
     // 选项数据
     options: {
       type: Array,

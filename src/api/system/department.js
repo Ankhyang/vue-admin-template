@@ -14,7 +14,6 @@ export function addFirstLevel(data) {
     data
   })
 }
-
 // 新增二级部门
 export function addSecLevel(data) {
   return request({
@@ -23,4 +22,3 @@ export function addSecLevel(data) {
     data
   })
 }
-
