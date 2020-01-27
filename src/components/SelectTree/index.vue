@@ -1,3 +1,4 @@
+/* eslint-disable vue/require-default-prop */
 <!-- 树状选择器 -->
 <template>
   <el-popover
@@ -44,11 +45,13 @@ export default {
   },
   props: {
     // 接收绑定参数
+    // eslint-disable-next-line vue/require-default-prop
     value: {
       type: String
       // default: ''
     },
     // 输入框宽度
+    // eslint-disable-next-line vue/require-default-prop
     width: {
       type: String
       // default: 'auto'

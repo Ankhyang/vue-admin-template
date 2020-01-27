@@ -9,7 +9,6 @@ for (let i = 0; i < count; i++) {
     'dept_code|1': ['PURCHASE', 'FINANCIAL', 'PERSONNEL'],
     dept_name: '@csentence(2, 5)',
     parent: '%root%',
-    children: [],
     remark: '@csentence(0, 15)',
     deleted: false,
     create_time: '@datetime',
@@ -61,8 +60,8 @@ export default [
     type: 'post',
     response: config => {
       const { dept_code, dept_name, parent, remark } = config.body
-      for (const i of List) {
-        if (List[i].id === parent) {
+      for (const i in List) {
+        if (List[i].id + '' === parent) {
           List[i].children.push({
             id: '@increment',
             dept_code,

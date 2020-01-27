@@ -15,7 +15,7 @@
           <el-table :data="tableData" stripe style="width:100%">
             <el-table-column prop="dept_code" label="部门编码"></el-table-column>
             <el-table-column prop="dept_name" label="部门名称"></el-table-column>
-            <el-table-column prop="parent" label="父级"></el-table-column>
+            <el-table-column prop="parent_name" label="父级"></el-table-column>
             <el-table-column prop="remark" label="备注"></el-table-column>
           </el-table>
         </el-main>
@@ -99,7 +99,14 @@ export default {
       }
     }
   },
-  created() {
+  watch: {
+    options: function() {
+      this.$nextTick(() => {
+        this.fetchFirstLevelList()
+      })
+    }
+  },
+  mounted: function() {
     this.fetchFirstLevelList()
   },
   methods: {
@@ -121,10 +128,11 @@ export default {
     getSecTableList() {
       getFirstLevelList().then(response => {
         const tempList = response.data
-        this.tableData = [];
+        console.log(tempList)
+        this.tableData = []
         for (const i in tempList) {
-          const {children, dept_name} = tempList[i]
-          for(const j in children) {
+          const { children } = tempList[i]
+          for (const j in children) {
             this.tableData.push({
               dept_name: children[j].dept_name,
               dept_code: children[j].dept_code,
@@ -171,7 +179,7 @@ export default {
             if (valid) {
               addSecLevel(this.temp).then(response => {
                 this.dialogFormVisible = false
-                this.fetchFirstLevelList()
+                this.getSecTableList()
                 this.$notify({
                   title: '新增二级部门成功',
                   type: 'success',

@@ -18,7 +18,7 @@ export function addFirstLevel(data) {
 export function addSecLevel(data) {
   return request({
     url: 'system/department/addSecLevel',
-    type: 'post',
+    method: 'post',
     data
   })
 }
