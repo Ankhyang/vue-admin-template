@@ -30,8 +30,8 @@
         <el-form-item label="部门名称" prop="dept_name">
           <el-input v-model="temp.dept_name"></el-input>
         </el-form-item>
-        <el-form-item v-show="!firstLevelVisible" label="父级部门" prop="parent">
-          <select-tree v-model="temp.parent" :options="options" :props="defaultTreeProps"></select-tree>
+        <el-form-item v-if="!firstLevelVisible" label="父级部门" prop="parent">
+          <treeselect v-model="temp.parent" :options="options" placeholder="请选择父级节点"></treeselect>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="temp.remark" type="textarea"></el-input>
@@ -47,11 +47,11 @@
 
 <script type="text/javascript">
 import { getFirstLevelList, addFirstLevel, addSecLevel } from '@/api/system/department'
-import SelectTree from '@/components/SelectTree'
+import Treeselect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+
 export default {
-  components: {
-    SelectTree
-  },
+  components: { Treeselect },
   data() {
     return {
       firstLevelList: [],
@@ -60,12 +60,6 @@ export default {
         label: 'label',
         children: 'children',
         isLeaf: false
-      },
-      defaultTreeProps: {
-        parent: 'parent',
-        value: 'id',
-        label: 'label',
-        children: 'children'
       },
       options: [],
       rules: {
@@ -79,7 +73,7 @@ export default {
         id: '',
         dept_name: '',
         dept_code: '',
-        parent: '',
+        parent: null,
         remark: ''
       },
       resetTemp() {
@@ -87,7 +81,7 @@ export default {
           id: '',
           dept_name: '',
           dept_code: '',
-          parent: '',
+          parent: null,
           remark: ''
         }
       },
@@ -102,33 +96,45 @@ export default {
   watch: {
     options: function() {
       this.$nextTick(() => {
-        this.fetchFirstLevelList()
+        return this.fetchFirstLevelList()
       })
     }
   },
   mounted: function() {
-    this.fetchFirstLevelList()
+    this.firstLevelList = this.fetchFirstLevelList()
   },
   methods: {
     fetchFirstLevelList() {
       getFirstLevelList().then(response => {
         const tempList = response.data
         this.firstLevelList = []
-        for (const i in tempList) {
+        for (let i in tempList) {
           const { id, parent, dept_name, children } = tempList[i]
-          this.firstLevelList.push({
-            'id': id.toString(),
-            'label': dept_name,
-            parent,
-            children
-          })
+          if (children && children.length > 0) {
+            this.firstLevelList.push({
+              'id': id.toString(),
+              'label': dept_name,
+              parent,
+              children: children.map(item => {
+                return {
+                  'id': item.id,
+                  'label': item.dept_name
+                }
+              })
+            })
+          } else {
+            this.firstLevelList.push({
+              'id': id.toString(),
+              'label': dept_name,
+              parent
+            })
+          }
         }
       })
     },
     getSecTableList() {
       getFirstLevelList().then(response => {
         const tempList = response.data
-        console.log(tempList)
         this.tableData = []
         for (const i in tempList) {
           const { children } = tempList[i]
@@ -164,7 +170,7 @@ export default {
             if (valid) {
               addFirstLevel(this.temp).then(response => {
                 this.dialogFormVisible = false
-                this.fetchFirstLevelList()
+                this.firstLevelList = this.fetchFirstLevelList()
                 this.$notify({
                   title: '新增一级部门成功',
                   type: 'success',
@@ -179,6 +185,7 @@ export default {
             if (valid) {
               addSecLevel(this.temp).then(response => {
                 this.dialogFormVisible = false
+                this.firstLevelList = this.fetchFirstLevelList()
                 this.getSecTableList()
                 this.$notify({
                   title: '新增二级部门成功',

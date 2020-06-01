@@ -14,7 +14,8 @@ for (let i = 0; i < count; i++) {
     create_time: '@datetime',
     create_by: '@name',
     update_time: '@datetime',
-    update_by: '@name'
+    update_by: '@name',
+    children: []
   }))
 }
 
@@ -59,8 +60,9 @@ export default [
     url: '/system/department/addSecLevel',
     type: 'post',
     response: config => {
+      console.log(config.body)
       const { dept_code, dept_name, parent, remark } = config.body
-      for (const i in List) {
+      for (let i in List) {
         if (List[i].id + '' === parent) {
           List[i].children.push({
             id: '@increment',
@@ -74,8 +76,10 @@ export default [
             update_time: '@now',
             update_by: '@name'
           })
+          break
         }
       }
+      console.log(List)
       return {
         code: 20000,
         data: List
